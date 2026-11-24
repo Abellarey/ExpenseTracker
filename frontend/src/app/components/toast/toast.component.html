@@ -1,0 +1,12 @@
+<div class="toast-stack" aria-live="polite">
+  <div
+    *ngFor="let item of notifications()"
+    class="toast-item"
+    [ngClass]="item.type"
+    role="status"
+  >
+    <i class="bi" [ngClass]="item.type === 'success' ? 'bi-check-circle-fill' : item.type === 'error' ? 'bi-exclamation-triangle-fill' : 'bi-info-circle-fill'"></i>
+    <span>{{ item.message }}</span>
+    <button type="button" class="btn-close" aria-label="Dismiss" (click)="dismiss(item.id)"></button>
+  </div>
+</div>

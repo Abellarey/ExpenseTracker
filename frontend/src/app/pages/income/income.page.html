@@ -1,0 +1,106 @@
+<div class="page-header">
+  <div>
+    <h1>Income</h1>
+    <p>Add, edit, and review every source of income.</p>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-4">
+    <div class="card panel">
+      <div class="card-header panel-header">
+        <h5>{{ editingId() ? 'Edit income' : 'Add income' }}</h5>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <div class="mb-3">
+            <label class="form-label" for="income-source">Source</label>
+            <input id="income-source" class="form-control" formControlName="source" placeholder="e.g. Salary, freelance project" />
+            <div class="field-error" *ngIf="isInvalid('source')">Enter a source with at least 2 characters.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="income-amount">Amount</label>
+            <input id="income-amount" type="number" step="0.01" min="0.01" class="form-control" formControlName="amount" />
+            <div class="field-error" *ngIf="isInvalid('amount')">Amount must be greater than zero.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="income-category">Category</label>
+            <select id="income-category" class="form-select" formControlName="category">
+              <option *ngFor="let category of categories()" [value]="category.name">{{ category.name }}</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="income-date">Date</label>
+            <input id="income-date" type="date" class="form-control" formControlName="date" />
+            <div class="field-error" *ngIf="isInvalid('date')">Choose a date.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="income-notes">Notes <span class="text-muted">(optional)</span></label>
+            <textarea id="income-notes" class="form-control" rows="2" formControlName="notes" placeholder="Any extra detail..."></textarea>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button class="btn btn-success flex-fill" type="submit" [disabled]="saving()">
+              <span *ngIf="saving()" class="spinner-border spinner-border-sm me-2"></span>
+              {{ editingId() ? 'Update income' : 'Add income' }}
+            </button>
+            <button class="btn btn-outline-secondary" type="button" *ngIf="editingId()" (click)="resetForm()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-8">
+    <div class="card panel h-100">
+      <div class="card-header panel-header">
+        <div>
+          <h5>Income history</h5>
+          <small>{{ transactions().length }} record(s)</small>
+        </div>
+      </div>
+
+      <div *ngIf="loading()" class="card-body text-center py-5"><div class="spinner-border spinner-border-sm text-success" role="status"></div></div>
+
+      <div class="table-responsive" *ngIf="!loading() && transactions().length">
+        <table class="table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Category</th>
+              <th>Date</th>
+              <th class="text-end">Amount</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let transaction of transactions()">
+              <td>
+                <strong>{{ transaction.description }}</strong>
+                <div class="text-muted small" *ngIf="transaction.notes">{{ transaction.notes }}</div>
+              </td>
+              <td><span class="badge rounded-pill badge-category">{{ transaction.category }}</span></td>
+              <td>{{ transaction.date | date: 'MMM d, y' }}</td>
+              <td class="text-end fw-semibold text-success">{{ transaction.amount | currency }}</td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-outline-primary" type="button" (click)="edit(transaction)" title="Edit"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-outline-danger" type="button" (click)="deleteTransaction(transaction)" title="Delete"><i class="bi bi-trash"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <app-empty-state
+        *ngIf="!loading() && !transactions().length"
+        icon="bi-wallet2"
+        title="No income records yet"
+        message="Use the form to record your first income source."
+      ></app-empty-state>
+    </div>
+  </div>
+</div>

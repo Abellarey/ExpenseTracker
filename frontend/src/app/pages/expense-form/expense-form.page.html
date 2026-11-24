@@ -1,0 +1,78 @@
+<div class="page-header">
+  <div>
+    <h1>{{ isEdit() ? 'Edit expense' : 'Add expense' }}</h1>
+    <p>{{ isEdit() ? 'Update the details of this expense.' : 'Record what you spent and keep your budget clear.' }}</p>
+  </div>
+  <a class="btn btn-outline-secondary btn-sm" routerLink="/expenses"><i class="bi bi-arrow-left"></i> Back to expenses</a>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-8">
+    <div class="card panel">
+      <div class="card-body p-4">
+        <div *ngIf="loading()" class="text-center py-4"><div class="spinner-border text-success" role="status"></div></div>
+
+        <ng-container *ngIf="!loading()">
+          <div class="alert alert-danger py-2" *ngIf="errorMessage()">{{ errorMessage() }}</div>
+
+          <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+            <div class="row g-3">
+              <div class="col-12 col-md-8">
+                <label class="form-label" for="expense-description">Description</label>
+                <input id="expense-description" class="form-control" formControlName="description" placeholder="e.g. Lunch at cafeteria" />
+                <div class="field-error" *ngIf="isInvalid('description')">{{ fieldMessage('description') }}</div>
+              </div>
+
+              <div class="col-12 col-md-4">
+                <label class="form-label" for="expense-amount">Amount</label>
+                <input id="expense-amount" type="number" step="0.01" min="0.01" class="form-control" formControlName="amount" />
+                <div class="field-error" *ngIf="isInvalid('amount')">{{ fieldMessage('amount') }}</div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="expense-category">Category</label>
+                <select id="expense-category" class="form-select" formControlName="category">
+                  <option value="">Choose a category</option>
+                  <option *ngFor="let category of categories()" [value]="category.name">{{ category.name }}</option>
+                </select>
+                <div class="field-error" *ngIf="isInvalid('category')">{{ fieldMessage('category') }}</div>
+                <small class="form-text">Need another category? <a routerLink="/categories">Create one</a>.</small>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="expense-date">Date</label>
+                <input id="expense-date" type="date" class="form-control" formControlName="date" />
+                <div class="field-error" *ngIf="isInvalid('date')">{{ fieldMessage('date') }}</div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="expense-payment">Payment method</label>
+                <select id="expense-payment" class="form-select" formControlName="paymentMethod">
+                  <option value="Cash">Cash</option>
+                  <option value="Card">Card</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  <option value="UPI">UPI</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label" for="expense-notes">Notes <span class="text-muted">(optional)</span></label>
+                <textarea id="expense-notes" class="form-control" rows="3" formControlName="notes" placeholder="Add any extra detail..."></textarea>
+                <div class="field-error" *ngIf="isInvalid('notes')">{{ fieldMessage('notes') }}</div>
+              </div>
+
+              <div class="col-12 d-flex gap-2 mt-2">
+                <button class="btn btn-success px-4" type="submit" [disabled]="saving()">
+                  <span *ngIf="saving()" class="spinner-border spinner-border-sm me-2"></span>
+                  {{ saving() ? 'Saving...' : (isEdit() ? 'Update expense' : 'Save expense') }}
+                </button>
+                <a class="btn btn-outline-secondary" routerLink="/expenses">Cancel</a>
+              </div>
+            </div>
+          </form>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

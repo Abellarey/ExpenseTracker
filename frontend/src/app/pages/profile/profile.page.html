@@ -1,0 +1,65 @@
+<div class="page-header">
+  <div>
+    <h1>Profile</h1>
+    <p>Manage your account details and password.</p>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card panel h-100">
+      <div class="card-header panel-header"><h5>Account details</h5></div>
+      <div class="card-body">
+        <div class="account-summary mb-4">
+          <span class="avatar-large">{{ (currentUser()?.name || 'U').charAt(0).toUpperCase() }}</span>
+          <div>
+            <strong>{{ currentUser()?.name || 'Your account' }}</strong>
+            <div class="text-muted small">{{ currentUser()?.email || '' }}</div>
+          </div>
+        </div>
+
+        <div class="alert alert-danger py-2" *ngIf="profileError()">{{ profileError() }}</div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" novalidate>
+          <div class="mb-3">
+            <label class="form-label" for="profile-name">Full name</label>
+            <input id="profile-name" class="form-control" formControlName="name" />
+            <div class="field-error" *ngIf="profileForm.controls.name.invalid && profileForm.controls.name.touched">Name must be at least 2 characters.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="profile-email">Email address</label>
+            <input id="profile-email" type="email" class="form-control" formControlName="email" />
+            <div class="field-error" *ngIf="profileForm.controls.email.invalid && profileForm.controls.email.touched">Enter a valid email address.</div>
+          </div>
+          <button class="btn btn-success" type="submit" [disabled]="savingProfile()">
+            {{ savingProfile() ? 'Saving...' : 'Save changes' }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-6">
+    <div class="card panel h-100">
+      <div class="card-header panel-header"><h5>Change password</h5></div>
+      <div class="card-body">
+        <div class="alert alert-danger py-2" *ngIf="passwordError()">{{ passwordError() }}</div>
+
+        <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" novalidate>
+          <div class="mb-3">
+            <label class="form-label" for="current-password">Current password</label>
+            <input id="current-password" type="password" class="form-control" formControlName="currentPassword" autocomplete="current-password" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="new-password">New password</label>
+            <input id="new-password" type="password" class="form-control" formControlName="newPassword" autocomplete="new-password" />
+            <div class="form-text">Use at least 6 characters.</div>
+          </div>
+          <button class="btn btn-outline-success" type="submit" [disabled]="savingPassword()">
+            {{ savingPassword() ? 'Updating...' : 'Update password' }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

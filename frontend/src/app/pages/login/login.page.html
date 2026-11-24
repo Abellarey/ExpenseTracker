@@ -1,0 +1,51 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-intro">
+      <a class="brand auth-brand" routerLink="/login">
+        <span class="brand-mark"><i class="bi bi-graph-up-arrow"></i></span>
+        <span>Expense<span class="brand-accent">Tracker</span></span>
+      </a>
+      <h1>Welcome back</h1>
+      <p>Log in to see where your money is going and stay on top of your goals.</p>
+      <div class="auth-features">
+        <div><i class="bi bi-check-circle-fill"></i> Clear spending dashboard</div>
+        <div><i class="bi bi-check-circle-fill"></i> Simple income and expense tracking</div>
+        <div><i class="bi bi-check-circle-fill"></i> Useful monthly reports</div>
+      </div>
+    </div>
+
+    <div class="auth-form-area">
+      <h2>Log in</h2>
+      <p class="text-muted">Enter your details to continue.</p>
+
+      <div class="alert alert-danger py-2" *ngIf="errorMessage()">{{ errorMessage() }}</div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="mb-3">
+          <label class="form-label" for="login-email">Email address</label>
+          <div class="input-with-icon">
+            <i class="bi bi-envelope"></i>
+            <input id="login-email" type="email" class="form-control" formControlName="email" placeholder="you@example.com" autocomplete="email" />
+          </div>
+          <div class="field-error" *ngIf="isInvalid('email')">Enter a valid email address.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="login-password">Password</label>
+          <div class="input-with-icon">
+            <i class="bi bi-lock"></i>
+            <input id="login-password" type="password" class="form-control" formControlName="password" placeholder="Your password" autocomplete="current-password" />
+          </div>
+          <div class="field-error" *ngIf="isInvalid('password')">Password is required.</div>
+        </div>
+
+        <button class="btn btn-success w-100 py-2" type="submit" [disabled]="loading()">
+          <span *ngIf="loading()" class="spinner-border spinner-border-sm me-2"></span>
+          {{ loading() ? 'Logging in...' : 'Log in' }}
+        </button>
+      </form>
+
+      <p class="auth-switch">New here? <a routerLink="/register">Create an account</a></p>
+    </div>
+  </div>
+</div>

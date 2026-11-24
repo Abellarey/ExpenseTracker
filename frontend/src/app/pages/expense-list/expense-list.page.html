@@ -1,0 +1,107 @@
+<div class="page-header">
+  <div>
+    <h1>Expenses</h1>
+    <p>Search, filter, edit, and delete your expense records.</p>
+  </div>
+  <a class="btn btn-success btn-sm" routerLink="/expenses/new"><i class="bi bi-plus-lg"></i> Add expense</a>
+</div>
+
+<div class="card panel filter-card mb-3">
+  <div class="card-body">
+    <form [formGroup]="filters" (ngSubmit)="applyFilters()">
+      <div class="row g-2 align-items-end">
+        <div class="col-12 col-md-4">
+          <label class="form-label" for="expense-search">Search</label>
+          <input id="expense-search" class="form-control" formControlName="search" placeholder="Description, notes, category..." />
+        </div>
+        <div class="col-12 col-md-2">
+          <label class="form-label" for="expense-category">Category</label>
+          <select id="expense-category" class="form-select" formControlName="category">
+            <option value="">All categories</option>
+            <option *ngFor="let category of categories()" [value]="category.name">{{ category.name }}</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-2">
+          <label class="form-label" for="expense-from">From</label>
+          <input id="expense-from" type="date" class="form-control" formControlName="dateFrom" />
+        </div>
+        <div class="col-6 col-md-2">
+          <label class="form-label" for="expense-to">To</label>
+          <input id="expense-to" type="date" class="form-control" formControlName="dateTo" />
+        </div>
+        <div class="col-12 col-md-2">
+          <div class="d-flex gap-2">
+            <button class="btn btn-success flex-fill" type="submit"><i class="bi bi-funnel"></i> Apply</button>
+            <button class="btn btn-outline-secondary" type="button" (click)="resetFilters()" title="Reset filters"><i class="bi bi-arrow-counterclockwise"></i></button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card panel">
+  <div class="card-header panel-header">
+    <div>
+      <h5>All expenses</h5>
+      <small>{{ total() }} record(s) found</small>
+    </div>
+  </div>
+
+  <div *ngIf="loading()" class="card-body text-center py-5">
+    <div class="spinner-border spinner-border-sm text-success" role="status"></div>
+  </div>
+
+  <div class="table-responsive" *ngIf="!loading() && transactions().length">
+    <table class="table align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Category</th>
+          <th>Date</th>
+          <th>Payment</th>
+          <th class="text-end">Amount</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let transaction of transactions(); trackBy: trackById">
+          <td>
+            <strong>{{ transaction.description }}</strong>
+            <div class="text-muted small" *ngIf="transaction.notes">{{ transaction.notes }}</div>
+          </td>
+          <td><span class="badge rounded-pill badge-category">{{ transaction.category }}</span></td>
+          <td>{{ transaction.date | date: 'MMM d, y' }}</td>
+          <td>{{ transaction.paymentMethod || '-' }}</td>
+          <td class="text-end fw-semibold text-danger">{{ transaction.amount | currency }}</td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-primary" [routerLink]="['/expenses', transaction.id, 'edit']" title="Edit">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <button class="btn btn-sm btn-outline-danger" type="button" (click)="deleteTransaction(transaction)" title="Delete">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card-body" *ngIf="!loading() && !transactions().length">
+    <app-empty-state
+      icon="bi-receipt"
+      title="No expenses found"
+      message="Try changing your filters or add a new expense."
+      actionLabel="Add expense"
+      actionLink="/expenses/new"
+    ></app-empty-state>
+  </div>
+
+  <div class="card-footer d-flex justify-content-between align-items-center" *ngIf="pagination().pages > 1">
+    <small class="text-muted">Page {{ pagination().page }} of {{ pagination().pages }}</small>
+    <div class="btn-group">
+      <button class="btn btn-sm btn-outline-secondary" type="button" [disabled]="page() <= 1" (click)="changePage(page() - 1)">Previous</button>
+      <button class="btn btn-sm btn-outline-secondary" type="button" [disabled]="page() >= pagination().pages" (click)="changePage(page() + 1)">Next</button>
+    </div>
+  </div>
+</div>

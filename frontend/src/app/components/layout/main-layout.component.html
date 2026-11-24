@@ -1,0 +1,63 @@
+<div class="app-shell">
+  <aside class="sidebar" [class.open]="sidebarOpen()">
+    <a class="brand" routerLink="/dashboard" (click)="closeSidebar()">
+      <span class="brand-mark"><i class="bi bi-graph-up-arrow"></i></span>
+      <span>Expense<span class="brand-accent">Tracker</span></span>
+    </a>
+
+    <div class="sidebar-label">Menu</div>
+    <nav class="nav flex-column">
+      <a
+        *ngFor="let item of navigation"
+        class="nav-link"
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: item.path === '/dashboard' }"
+        (click)="closeSidebar()"
+      >
+        <i class="bi {{ item.icon }}"></i>
+        <span>{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-tip">
+        <i class="bi bi-lightbulb"></i>
+        <span>Track small expenses daily to see the big picture.</span>
+      </div>
+      <small>&copy; {{ year }} Expense Tracker</small>
+    </div>
+  </aside>
+
+  @if (sidebarOpen()) {
+    <div class="sidebar-backdrop" (click)="closeSidebar()"></div>
+  }
+
+  <div class="content-shell">
+    <header class="topbar">
+      <button class="btn btn-light menu-button" type="button" aria-label="Toggle menu" (click)="toggleSidebar()">
+        <i class="bi bi-list"></i>
+      </button>
+
+      <div class="topbar-spacer"></div>
+
+      <div class="user-area">
+        <span class="avatar">{{ (currentUser()?.name || 'U').charAt(0).toUpperCase() }}</span>
+        <div class="user-details">
+          <strong>{{ currentUser()?.name || 'Your account' }}</strong>
+          <small>{{ currentUser()?.email || '' }}</small>
+        </div>
+        <button class="btn btn-outline-secondary btn-sm" type="button" (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i>
+          <span class="logout-label"> Logout</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <router-outlet />
+    </main>
+  </div>
+</div>
+
+<app-toast />

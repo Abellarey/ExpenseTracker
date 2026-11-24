@@ -1,0 +1,125 @@
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p>Here is your money at a glance.</p>
+  </div>
+  <div class="header-actions">
+    <a class="btn btn-outline-success btn-sm" routerLink="/reports"><i class="bi bi-bar-chart-line"></i> View reports</a>
+    <a class="btn btn-success btn-sm" routerLink="/expenses/new"><i class="bi bi-plus-lg"></i> Add expense</a>
+  </div>
+</div>
+
+<div *ngIf="loading()" class="text-center py-5">
+  <div class="spinner-border text-success" role="status"></div>
+  <p class="text-muted mt-2">Loading your dashboard...</p>
+</div>
+
+<ng-container *ngIf="data() as report">
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+      <app-summary-card label="Total income" [value]="report.totalIncome" icon="bi-arrow-down-left-circle" tone="green" [currency]="true" detail="All time"></app-summary-card>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+      <app-summary-card label="Total expenses" [value]="report.totalExpense" icon="bi-arrow-up-right-circle" tone="red" [currency]="true" detail="All time"></app-summary-card>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+      <app-summary-card label="Current balance" [value]="report.balance" icon="bi-wallet2" tone="blue" [currency]="true" [detail]="report.incomeCount + ' income / ' + report.expenseCount + ' expenses'"></app-summary-card>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+      <app-summary-card
+        label="This month's expenses"
+        [value]="report.monthlyExpense"
+        icon="bi-calendar-range"
+        tone="amber"
+        [currency]="true"
+        [change]="report.monthlyChange"
+        detail="vs last month"
+      ></app-summary-card>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-lg-7">
+      <div class="card panel h-100">
+        <div class="card-header panel-header">
+          <div>
+            <h5>Monthly trend</h5>
+            <small>Income and expenses over the last 6 months</small>
+          </div>
+          <a class="btn btn-sm btn-light" routerLink="/reports">Details</a>
+        </div>
+        <div class="card-body">
+          <app-chart [config]="trendChart()" [height]="280"></app-chart>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-5">
+      <div class="card panel h-100">
+        <div class="card-header panel-header">
+          <div>
+            <h5>Expense breakdown</h5>
+            <small>Where this month's money went</small>
+          </div>
+        </div>
+        <div class="card-body">
+          <app-chart *ngIf="report.categoryBreakdown.length; else noBreakdown" [config]="expenseChart()" [height]="280"></app-chart>
+          <ng-template #noBreakdown>
+            <app-empty-state icon="bi-pie-chart" title="No expenses this month" message="Add an expense to see your category breakdown." actionLabel="Add expense" actionLink="/expenses/new"></app-empty-state>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12">
+      <div class="card panel">
+        <div class="card-header panel-header">
+          <div>
+            <h5>Recent transactions</h5>
+            <small>Your latest {{ report.recentTransactions.length }} records</small>
+          </div>
+          <a class="btn btn-sm btn-light" routerLink="/expenses">View all</a>
+        </div>
+        <div class="card-body p-0" *ngIf="report.recentTransactions.length; else noRecent">
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th class="text-end">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let transaction of report.recentTransactions">
+                  <td>
+                    <strong>{{ transaction.description }}</strong>
+                    <div class="text-muted small" *ngIf="transaction.notes">{{ transaction.notes }}</div>
+                  </td>
+                  <td><span class="badge rounded-pill badge-category">{{ transaction.category }}</span></td>
+                  <td>{{ transaction.date | date: 'MMM d, y' }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="transaction.type === 'income' ? 'text-bg-success' : 'text-bg-danger'">
+                      {{ transaction.type }}
+                    </span>
+                  </td>
+                  <td class="text-end fw-semibold" [class.text-success]="transaction.type === 'income'" [class.text-danger]="transaction.type === 'expense'">
+                    {{ transaction.type === 'income' ? '+' : '-' }}{{ transaction.amount | currency }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <ng-template #noRecent>
+          <div class="card-body">
+            <app-empty-state icon="bi-receipt" title="No transactions yet" message="Add an expense or income record to begin." actionLabel="Add expense" actionLink="/expenses/new"></app-empty-state>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</ng-container>

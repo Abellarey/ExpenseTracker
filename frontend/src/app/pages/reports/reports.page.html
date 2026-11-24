@@ -1,0 +1,127 @@
+<div class="page-header">
+  <div>
+    <h1>Reports</h1>
+    <p>Analyze your spending by time period, category, and payment method.</p>
+  </div>
+</div>
+
+<div class="card panel filter-card mb-3">
+  <div class="card-body">
+    <form [formGroup]="filters" (ngSubmit)="loadReport()">
+      <div class="row g-2 align-items-end">
+        <div class="col-6 col-md-3">
+          <label class="form-label" for="report-period">Period</label>
+          <select id="report-period" class="form-select" formControlName="period">
+            <option value="day">Daily</option>
+            <option value="week">Weekly</option>
+            <option value="month">Monthly</option>
+            <option value="year">Yearly</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label" for="report-date">Date in period</label>
+          <input id="report-date" type="date" class="form-control" formControlName="date" />
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label" for="report-category">Category</label>
+          <select id="report-category" class="form-select" formControlName="category">
+            <option value="">All expense categories</option>
+            <option *ngFor="let category of categories()" [value]="category.name">{{ category.name }}</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-2">
+          <button class="btn btn-success w-100" type="submit"><i class="bi bi-bar-chart"></i> Generate</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div *ngIf="loading()" class="text-center py-5"><div class="spinner-border text-success" role="status"></div></div>
+
+<ng-container *ngIf="data() as report">
+  <div class="report-label">
+    <h5>{{ report.periodLabel }}</h5>
+    <span *ngIf="report.category">Filtered by {{ report.category }}</span>
+    <span *ngIf="!report.category">All expense categories</span>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-6 col-lg-3"><app-summary-card label="Total expenses" [value]="report.summary.totalExpense" icon="bi-arrow-up-right-circle" tone="red" [currency]="true"></app-summary-card></div>
+    <div class="col-6 col-lg-3"><app-summary-card label="Transactions" [value]="report.summary.transactionCount" icon="bi-list-check" tone="blue"></app-summary-card></div>
+    <div class="col-6 col-lg-3"><app-summary-card label="Average expense" [value]="report.summary.averageExpense" icon="bi-calculator" tone="amber" [currency]="true"></app-summary-card></div>
+    <div class="col-6 col-lg-3"><app-summary-card label="Net for period" [value]="report.summary.netBalance" icon="bi-balance-scale" tone="green" [currency]="true"></app-summary-card></div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-lg-7">
+      <div class="card panel h-100">
+        <div class="card-header panel-header"><h5>Spending trend</h5></div>
+        <div class="card-body">
+          <app-chart [config]="trendChart()" [height]="300"></app-chart>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-5">
+      <div class="card panel h-100">
+        <div class="card-header panel-header"><h5>Category breakdown</h5></div>
+        <div class="card-body">
+          <app-chart *ngIf="report.categorySummary.length; else noCategoryData" [config]="categoryChart()" [height]="300"></app-chart>
+          <ng-template #noCategoryData>
+            <app-empty-state icon="bi-pie-chart" title="No expenses in this period" message="Choose another date or add an expense."></app-empty-state>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-lg-7">
+      <div class="card panel h-100">
+        <div class="card-header panel-header"><h5>Category summary</h5></div>
+        <div class="table-responsive" *ngIf="report.categorySummary.length; else noSummary">
+          <table class="table align-middle mb-0">
+            <thead><tr><th>Category</th><th class="text-end">Count</th><th class="text-end">Amount</th><th class="text-end">Share</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let item of report.categorySummary; trackBy: trackCategory">
+                <td>
+                  <strong>{{ item.category }}</strong>
+                  <div class="progress mt-1" style="height: 5px">
+                    <div class="progress-bar" [style.width.%]="item.percentage" [style.background-color]="item.color"></div>
+                  </div>
+                </td>
+                <td class="text-end">{{ item.count }}</td>
+                <td class="text-end fw-semibold">{{ item.amount | currency }}</td>
+                <td class="text-end">{{ item.percentage | number: '1.0-1' }}%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #noSummary><div class="card-body"><app-empty-state icon="bi-tags" title="No category data" message="Expenses in this period will appear here."></app-empty-state></div></ng-template>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+      <div class="card panel h-100">
+        <div class="card-header panel-header"><h5>Spending statistics</h5></div>
+        <div class="card-body">
+          <ul class="list-unstyled stats-list mb-0">
+            <li><span>Expense count</span><strong>{{ report.summary.expenseCount }}</strong></li>
+            <li><span>Income count</span><strong>{{ report.summary.incomeCount }}</strong></li>
+            <li><span>Largest expense</span><strong>{{ report.summary.largestExpense?.amount | currency }}</strong></li>
+            <li *ngIf="report.summary.largestExpense"><span>Biggest item</span><strong>{{ report.summary.largestExpense?.description }}</strong></li>
+            <li><span>Top category</span><strong>{{ report.summary.topCategory?.category || '-' }}</strong></li>
+            <li *ngIf="report.paymentSummary.length"><span>Payment methods</span><strong>{{ report.paymentSummary.length }}</strong></li>
+          </ul>
+
+          <div *ngIf="report.paymentSummary.length" class="mt-3">
+            <h6 class="small text-muted text-uppercase">Payment methods</h6>
+            <div *ngFor="let item of report.paymentSummary" class="d-flex justify-content-between small border-bottom py-1">
+              <span>{{ item.method }}</span><strong>{{ item.amount | currency }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

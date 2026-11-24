@@ -1,0 +1,71 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-intro">
+      <a class="brand auth-brand" routerLink="/register">
+        <span class="brand-mark"><i class="bi bi-graph-up-arrow"></i></span>
+        <span>Expense<span class="brand-accent">Tracker</span></span>
+      </a>
+      <h1>Start tracking today</h1>
+      <p>Create a free account and get a clear view of your income, expenses, and spending habits.</p>
+      <div class="auth-features">
+        <div><i class="bi bi-check-circle-fill"></i> Your data stays private to your account</div>
+        <div><i class="bi bi-check-circle-fill"></i> Built-in categories plus your own</div>
+        <div><i class="bi bi-check-circle-fill"></i> Charts that make reports easy to read</div>
+      </div>
+    </div>
+
+    <div class="auth-form-area">
+      <h2>Create account</h2>
+      <p class="text-muted">Fill in the details below.</p>
+
+      <div class="alert alert-danger py-2" *ngIf="errorMessage()">{{ errorMessage() }}</div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="mb-3">
+          <label class="form-label" for="register-name">Full name</label>
+          <div class="input-with-icon">
+            <i class="bi bi-person"></i>
+            <input id="register-name" type="text" class="form-control" formControlName="name" placeholder="Your name" autocomplete="name" />
+          </div>
+          <div class="field-error" *ngIf="isInvalid('name')">Name must be at least 2 characters.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="register-email">Email address</label>
+          <div class="input-with-icon">
+            <i class="bi bi-envelope"></i>
+            <input id="register-email" type="email" class="form-control" formControlName="email" placeholder="you@example.com" autocomplete="email" />
+          </div>
+          <div class="field-error" *ngIf="isInvalid('email')">Enter a valid email address.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="register-password">Password</label>
+          <div class="input-with-icon">
+            <i class="bi bi-lock"></i>
+            <input id="register-password" type="password" class="form-control" formControlName="password" placeholder="At least 6 characters" autocomplete="new-password" />
+          </div>
+          <div class="field-error" *ngIf="isInvalid('password')">Password must be at least 6 characters.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="register-confirm">Confirm password</label>
+          <div class="input-with-icon">
+            <i class="bi bi-lock-fill"></i>
+            <input id="register-confirm" type="password" class="form-control" formControlName="confirmPassword" placeholder="Repeat password" autocomplete="new-password" />
+          </div>
+          <div class="field-error" *ngIf="isInvalid('confirmPassword')">
+            {{ form.controls.confirmPassword.errors?.['mismatch'] ? 'Passwords do not match.' : 'Confirm your password.' }}
+          </div>
+        </div>
+
+        <button class="btn btn-success w-100 py-2" type="submit" [disabled]="loading()">
+          <span *ngIf="loading()" class="spinner-border spinner-border-sm me-2"></span>
+          {{ loading() ? 'Creating account...' : 'Create account' }}
+        </button>
+      </form>
+
+      <p class="auth-switch">Already have an account? <a routerLink="/login">Log in</a></p>
+    </div>
+  </div>
+</div>

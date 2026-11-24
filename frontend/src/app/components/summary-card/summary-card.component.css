@@ -1,0 +1,77 @@
+.summary-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  box-shadow: var(--shadow);
+  height: 100%;
+}
+
+.summary-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.summary-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.summary-label {
+  color: var(--muted-text);
+  font-size: 0.82rem;
+}
+
+.summary-value {
+  font-size: 1.55rem;
+  line-height: 1.2;
+  color: var(--dark-text);
+  word-break: break-word;
+}
+
+.summary-detail {
+  color: var(--muted-text);
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.summary-detail .positive {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.summary-detail .negative {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.green .summary-icon {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.blue .summary-icon {
+  background: #e7f1ff;
+  color: #0d6efd;
+}
+
+.amber .summary-icon {
+  background: #fff4df;
+  color: #d97706;
+}
+
+.red .summary-icon {
+  background: #fdeaea;
+  color: var(--danger);
+}

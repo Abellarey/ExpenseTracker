@@ -1,0 +1,14 @@
+<div class="summary-card" [ngClass]="tone">
+  <div class="summary-icon"><i class="bi {{ icon }}"></i></div>
+  <div class="summary-body">
+    <span class="summary-label">{{ label }}</span>
+    <strong class="summary-value">{{ currency ? (value | currency) : value }}</strong>
+    <small class="summary-detail" *ngIf="detail || change !== null">
+      <span *ngIf="change !== null" [class.positive]="change >= 0" [class.negative]="change < 0">
+        <i class="bi" [ngClass]="change >= 0 ? 'bi-arrow-up-short' : 'bi-arrow-down-short'"></i>
+        {{ change | number: '1.0-1' }}%
+      </span>
+      <span *ngIf="detail">{{ detail }}</span>
+    </small>
+  </div>
+</div>
