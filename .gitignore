@@ -25,6 +25,12 @@ android/app/build/
 *.jks
 *.keystore
 keystore.properties
+frontend/android/local.properties
+frontend/android/.gradle/
+frontend/android/app/build/
+frontend/android/app/src/main/assets/public/
+frontend/android/app/src/main/assets/capacitor.config.json
+frontend/android/app/src/main/assets/capacitor.plugins.json
 
 # OS files
 .DS_Store
